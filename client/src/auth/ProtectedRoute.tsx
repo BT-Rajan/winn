@@ -4,9 +4,12 @@ import { useAuth } from "./AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
+  /** Restrict to specific roles, e.g. Pass 2's customer-only project
+   *  workspace. Omit for anything shared across every signed-in user. */
+  roles?: string[];
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -19,6 +22,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (roles && !roles.some((role) => user.roles.includes(role))) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

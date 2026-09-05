@@ -1,14 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import { AppShell } from "../design-system/AppShell";
 import { Card } from "../design-system/Card";
+import { Button } from "../design-system/Button";
 import { useAuth } from "../auth/AuthContext";
 
 /**
- * Pass 1 deliberately ships an empty, calm dashboard — no placeholder
- * metrics or decorative widgets. Passes 2–4 add real content here
- * per role (project status, matching projects, marketplace activity).
+ * Pass 1 shipped an empty, calm dashboard. Pass 2 gives customers their
+ * real entry point (their projects) here — builder/admin content still
+ * arrives in later passes, so this stays a placeholder for those roles.
  */
 export function DashboardPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const isCustomer = user?.roles.includes("customer");
 
   return (
     <AppShell>
@@ -16,16 +20,19 @@ export function DashboardPage() {
         Welcome{user ? `, ${user.fullName.split(" ")[0]}` : ""}
       </h1>
       <p style={{ color: "var(--color-ink-500)", marginBottom: "var(--space-6)" }}>
-        {user?.roles.includes("builder")
-          ? "Your opportunities will appear here once matching is live."
-          : "Your projects will appear here once you create one."}
+        {isCustomer
+          ? "Submit a project to start receiving builder proposals."
+          : "Your opportunities will appear here once matching is live."}
       </p>
-      <Card>
-        <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)" }}>
-          Foundation complete — account, authentication, and roles are live. Project and builder
-          workflows arrive in the next development passes.
-        </p>
-      </Card>
+      {isCustomer ? (
+        <Button onClick={() => navigate("/projects")}>Go to your projects</Button>
+      ) : (
+        <Card>
+          <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)" }}>
+            Builder workflows arrive in the next development pass.
+          </p>
+        </Card>
+      )}
     </AppShell>
   );
 }

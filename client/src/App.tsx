@@ -4,6 +4,8 @@ import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { ProjectsListPage } from "./pages/projects/ProjectsListPage";
+import { ProjectDetailPage } from "./pages/projects/ProjectDetailPage";
 
 export function App() {
   return (
@@ -17,6 +19,22 @@ export function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects"
+            element={
+              <ProtectedRoute roles={["customer"]}>
+                <ProjectsListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projects/:id"
+            element={
+              <ProtectedRoute roles={["customer"]}>
+                <ProjectDetailPage />
               </ProtectedRoute>
             }
           />

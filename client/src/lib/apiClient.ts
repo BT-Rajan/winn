@@ -3,11 +3,13 @@ const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
 export class ApiError extends Error {
   status: number;
   code?: string;
+  details?: unknown;
 
-  constructor(status: number, message: string, code?: string) {
+  constructor(status: number, message: string, code?: string, details?: unknown) {
     super(message);
     this.status = status;
     this.code = code;
+    this.details = details;
   }
 }
 
@@ -29,10 +31,13 @@ export function getStoredRefreshToken(): string | null {
 }
 
 async function rawRequest(path: string, init: RequestInit): Promise<Response> {
+  // FormData bodies (file uploads) must keep the browser's own
+  // multipart Content-Type with its boundary — never override it to JSON.
+  const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
   return fetch(`${API_BASE}${path}`, {
     ...init,
     headers: {
-      ...(init.body ? { "Content-Type": "application/json" } : {}),
+      ...(init.body && !isFormData ? { "Content-Type": "application/json" } : {}),
       ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...init.headers,
     },
@@ -74,9 +79,34 @@ export async function apiRequest<T>(
 
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, payload?.error?.message ?? "Request failed", payload?.error?.code);
+    throw new ApiError(
+      res.status,
+      payload?.error?.message ?? "Request failed",
+      payload?.error?.code,
+      payload?.error?.details,
+    );
   }
 
   if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
+
+/** Same auth/retry/error handling as apiRequest, for multipart uploads —
+ *  kept separate only because a FormData body must not be JSON-stringified
+ *  or given a manual Content-Type (the browser sets the multipart boundary). */
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const init: RequestInit = { method: "POST", body: formData };
+
+  let res = await rawRequest(path, init);
+
+  if (res.status === 401 && (await tryRefresh())) {
+    res = await rawRequest(path, init);
+  }
+
+  if (!res.ok) {
+    const payload = await res.json().catch(() => ({}));
+    throw new ApiError(res.status, payload?.error?.message ?? "Upload failed", payload?.error?.code);
+  }
+
   return res.json() as Promise<T>;
 }
