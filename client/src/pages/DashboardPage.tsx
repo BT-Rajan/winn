@@ -32,6 +32,9 @@ export function DashboardPage() {
           <Button variant="secondary" onClick={() => navigate("/marketplace")}>
             Browse marketplace
           </Button>
+          <Button variant="secondary" onClick={() => navigate("/proposals/mine")}>
+            Your proposals
+          </Button>
         </div>
       )}
       {!isCustomer && !isBuilder && (

@@ -6,6 +6,7 @@ import { filesRouter } from "../modules/files/files.routes";
 import { projectsRouter } from "../modules/projects/projects.routes";
 import { buildersRouter } from "../modules/builders/builders.routes";
 import { marketplaceRouter } from "../modules/marketplace/marketplace.routes";
+import { proposalsRouter } from "../modules/proposals/proposals.routes";
 import { checkDbConnection } from "../db/pool";
 
 export const apiRouter = Router();
@@ -24,3 +25,4 @@ apiRouter.use("/files", filesRouter);
 apiRouter.use("/projects", projectsRouter);
 apiRouter.use("/builders", buildersRouter);
 apiRouter.use("/marketplace", marketplaceRouter);
+apiRouter.use("/proposals", proposalsRouter);

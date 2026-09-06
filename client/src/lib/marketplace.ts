@@ -39,13 +39,21 @@ export interface MarketplaceDocument {
   sizeBytes: number;
 }
 
+export interface MyProposalSummary {
+  id: string;
+  price: string;
+  durationValue: number;
+  durationUnit: "days" | "weeks" | "months";
+  status: "submitted" | "withdrawn" | "awarded" | "rejected";
+}
+
 export function listMarketplaceProjects(): Promise<{ projects: MarketplaceProjectCard[] }> {
   return apiRequest("/marketplace/projects");
 }
 
 export function getMarketplaceProject(
   id: string,
-): Promise<{ project: MarketplaceProjectDetail; documents: MarketplaceDocument[] }> {
+): Promise<{ project: MarketplaceProjectDetail; documents: MarketplaceDocument[]; myProposal: MyProposalSummary | null }> {
   return apiRequest(`/marketplace/projects/${id}`);
 }
 

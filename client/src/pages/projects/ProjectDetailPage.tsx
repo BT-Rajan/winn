@@ -15,12 +15,14 @@ import {
   type Project,
   type ProjectDocument,
 } from "../../lib/projects";
+import { awardProposal, listProjectProposals, type ProposalComparison } from "../../lib/proposals";
 
 const STATUS_LABEL: Record<Project["status"], string> = {
   draft: "Draft",
   submitted: "Submitted — under review",
-  verified: "Verified",
+  verified: "Verified — open for proposals",
   rejected: "Needs changes",
+  awarded: "Awarded",
 };
 
 function formatBytes(bytes: number): string {
@@ -42,6 +44,10 @@ export function ProjectDetailPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    load();
+  }, [id]);
+
+  function load() {
     if (!id) return;
     getProject(id)
       .then((res) => {
@@ -49,7 +55,7 @@ export function ProjectDetailPage() {
         setDocuments(res.documents);
       })
       .catch((err) => setLoadError(err instanceof ApiError ? err.message : "Couldn't load this project."));
-  }, [id]);
+  }
 
   // Autosave: one field at a time, on blur. Never a separate "Save" button
   // for the details form — the customer just moves on to the next field.
@@ -184,27 +190,33 @@ export function ProjectDetailPage() {
       )}
 
       {!isDraft ? (
-        <Card>
-          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            <Row label="Project type" value={project.projectType} />
-            <Row label="Location" value={project.location} />
-            <Row
-              label="Size"
-              value={project.sizeValue ? `${project.sizeValue} ${project.sizeUnit ?? ""}`.trim() : null}
-            />
-            <Row
-              label="Budget"
-              value={
-                project.budgetMin
-                  ? `${project.budgetMin}${project.budgetMax ? ` – ${project.budgetMax}` : ""}`
-                  : null
-              }
-            />
-            <Row label="Requirements" value={project.requirements} />
-            <Row label="Closing date" value={project.closingDate} />
-            <Row label="Documents" value={`${documents.length} attached`} />
-          </div>
-        </Card>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+          <Card>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+              <Row label="Project type" value={project.projectType} />
+              <Row label="Location" value={project.location} />
+              <Row
+                label="Size"
+                value={project.sizeValue ? `${project.sizeValue} ${project.sizeUnit ?? ""}`.trim() : null}
+              />
+              <Row
+                label="Budget"
+                value={
+                  project.budgetMin
+                    ? `${project.budgetMin}${project.budgetMax ? ` – ${project.budgetMax}` : ""}`
+                    : null
+                }
+              />
+              <Row label="Requirements" value={project.requirements} />
+              <Row label="Closing date" value={project.closingDate} />
+              <Row label="Documents" value={`${documents.length} attached`} />
+            </div>
+          </Card>
+
+          {(project.status === "verified" || project.status === "awarded") && (
+            <ProposalsComparison projectId={project.id} projectStatus={project.status} onAwarded={load} />
+          )}
+        </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
           <Card>
@@ -330,6 +342,135 @@ export function ProjectDetailPage() {
         </div>
       )}
     </AppShell>
+  );
+}
+
+function ProposalsComparison({
+  projectId,
+  projectStatus,
+  onAwarded,
+}: {
+  projectId: string;
+  projectStatus: Project["status"];
+  onAwarded: () => void;
+}) {
+  const [proposals, setProposals] = useState<ProposalComparison[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [awardingId, setAwardingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    listProjectProposals(projectId)
+      .then((res) => setProposals(res.proposals))
+      .catch((err) => setError(err instanceof ApiError ? err.message : "Couldn't load proposals."));
+  }, [projectId]);
+
+  async function handleAward(proposalId: string) {
+    setAwardingId(proposalId);
+    setError(null);
+    try {
+      await awardProposal(projectId, proposalId);
+      onAwarded();
+      const res = await listProjectProposals(projectId);
+      setProposals(res.proposals);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Couldn't award this proposal.");
+    } finally {
+      setAwardingId(null);
+    }
+  }
+
+  return (
+    <Card>
+      <h2 style={{ fontSize: "var(--font-size-lg)", marginBottom: "var(--space-2)" }}>Proposals</h2>
+      <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)", marginBottom: "var(--space-4)" }}>
+        {projectStatus === "awarded"
+          ? "You've selected a builder for this project."
+          : "Compare builders side by side. Selecting one awards the project and closes it to further proposals."}
+      </p>
+
+      {error && (
+        <div
+          style={{
+            backgroundColor: "var(--color-danger-bg)",
+            color: "var(--color-danger)",
+            fontSize: "var(--font-size-sm)",
+            padding: "var(--space-3)",
+            borderRadius: "var(--radius-sm)",
+            marginBottom: "var(--space-4)",
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {proposals === null ? (
+        <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)" }}>Loading…</p>
+      ) : proposals.length === 0 ? (
+        <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)" }}>
+          No proposals yet. Verified builders can see this project and submit a bid.
+        </p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
+          {proposals.map((proposal) => (
+            <div
+              key={proposal.proposalId}
+              style={{
+                border: `1px solid ${proposal.status === "awarded" ? "var(--color-success)" : "var(--color-border)"}`,
+                borderRadius: "var(--radius-sm)",
+                padding: "var(--space-4)",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+                <div>
+                  <h3 style={{ marginBottom: "var(--space-1)" }}>{proposal.companyName}</h3>
+                  {proposal.yearsExperience != null && (
+                    <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)" }}>
+                      {proposal.yearsExperience} years of experience
+                    </p>
+                  )}
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: "var(--font-size-lg)", fontWeight: 700 }}>{proposal.price}</div>
+                  <div style={{ fontSize: "var(--font-size-sm)", color: "var(--color-ink-500)" }}>
+                    {proposal.durationValue} {proposal.durationUnit}
+                  </div>
+                </div>
+              </div>
+
+              <p style={{ fontSize: "var(--font-size-sm)", color: "var(--color-ink-700)", margin: "var(--space-3) 0" }}>
+                {proposal.matchScore}% match — {proposal.matchExplanation}
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+                <Row label="Scope" value={proposal.scope} />
+                <Row label="Exclusions" value={proposal.exclusions} />
+                <Row label="Payment terms" value={proposal.paymentTerms} />
+                <Row label="Warranty" value={proposal.warranty} />
+              </div>
+
+              <div style={{ marginTop: "var(--space-4)" }}>
+                {proposal.status === "awarded" ? (
+                  <span style={{ color: "var(--color-success)", fontWeight: 600, fontSize: "var(--font-size-sm)" }}>
+                    Awarded
+                  </span>
+                ) : projectStatus === "verified" ? (
+                  <Button
+                    onClick={() => handleAward(proposal.proposalId)}
+                    disabled={awardingId === proposal.proposalId}
+                  >
+                    {awardingId === proposal.proposalId ? "Awarding…" : "Award this builder"}
+                  </Button>
+                ) : (
+                  <span style={{ color: "var(--color-ink-300)", fontSize: "var(--font-size-sm)" }}>
+                    Not selected
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
   );
 }
 

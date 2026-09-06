@@ -9,6 +9,7 @@ import { ProjectDetailPage } from "./pages/projects/ProjectDetailPage";
 import { BuilderProfilePage } from "./pages/builder/BuilderProfilePage";
 import { MarketplaceListPage } from "./pages/marketplace/MarketplaceListPage";
 import { MarketplaceProjectDetailPage } from "./pages/marketplace/MarketplaceProjectDetailPage";
+import { MyProposalsPage } from "./pages/proposals/MyProposalsPage";
 
 export function App() {
   return (
@@ -62,6 +63,14 @@ export function App() {
             element={
               <ProtectedRoute roles={["builder"]}>
                 <MarketplaceProjectDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/proposals/mine"
+            element={
+              <ProtectedRoute roles={["builder"]}>
+                <MyProposalsPage />
               </ProtectedRoute>
             }
           />

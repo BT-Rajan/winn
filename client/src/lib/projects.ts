@@ -1,6 +1,6 @@
 import { apiRequest, apiUpload } from "./apiClient";
 
-export type ProjectStatus = "draft" | "submitted" | "verified" | "rejected";
+export type ProjectStatus = "draft" | "submitted" | "verified" | "rejected" | "awarded";
 
 export interface Project {
   id: string;

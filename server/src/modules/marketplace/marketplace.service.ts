@@ -2,6 +2,7 @@ import { ForbiddenError, NotFoundError } from "../../core/errors";
 import { findProfileByUserId, type BuilderProfileRow } from "../builders/builders.repository";
 import { assertCanAccess, getFileOrThrow } from "../files/files.service";
 import { scoreMatch, type MatchResult } from "../matching/matching.service";
+import { findProposal, type ProposalRow } from "../proposals/proposals.repository";
 import {
   findVerifiedProjectById,
   listProjectDocuments,
@@ -43,7 +44,7 @@ export async function listMarketplaceProjects(builderUserId: string): Promise<Ma
 export async function getMarketplaceProject(
   builderUserId: string,
   projectId: string,
-): Promise<{ project: ProjectRow; documents: ProjectDocumentRow[]; match: MatchResult }> {
+): Promise<{ project: ProjectRow; documents: ProjectDocumentRow[]; match: MatchResult; myProposal: ProposalRow | null }> {
   const profile = await getVerifiedBuilderProfile(builderUserId);
 
   // An unverified or nonexistent project looks identical to a builder —
@@ -53,7 +54,10 @@ export async function getMarketplaceProject(
 
   const documents = await listProjectDocuments(project.id);
   const match = scoreMatch(project, profile);
-  return { project, documents, match };
+  // Pass 6: let the builder see whether they've already bid, and what
+  // its status is, right on the project they're looking at.
+  const myProposal = await findProposal(project.id, profile.id);
+  return { project, documents, match, myProposal };
 }
 
 export async function getMarketplaceDocumentFile(

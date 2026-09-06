@@ -1,5 +1,23 @@
-import type { BuilderProfileRow } from "../builders/builders.repository";
-import type { ProjectRow } from "../projects/projects.repository";
+/** The only project fields the scorer reads — so it composes with any
+ *  row shape (marketplace's ProjectRow, a proposal's joined project
+ *  fields, etc.) without depending on the whole entity. */
+export interface MatchableProject {
+  project_type: string | null;
+  location: string | null;
+  budget_min: string | null;
+  budget_max: string | null;
+}
+
+/** Same idea for the builder side — Pass 6's proposal comparison joins
+ *  these fields from builder_profiles without pulling in the rest of
+ *  the profile (id, description, verification_status, etc.). */
+export interface MatchableBuilderProfile {
+  specialties: string[] | null;
+  service_locations: string[] | null;
+  budget_range_min: string | null;
+  budget_range_max: string | null;
+  years_experience: number | null;
+}
 
 export interface MatchResult {
   score: number;
@@ -66,7 +84,7 @@ function joinWithAnd(items: string[]): string {
   return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
-export function scoreMatch(project: ProjectRow, profile: BuilderProfileRow): MatchResult {
+export function scoreMatch(project: MatchableProject, profile: MatchableBuilderProfile): MatchResult {
   let score = 0;
   const reasons: string[] = [];
   const matchedCriteria: string[] = [];

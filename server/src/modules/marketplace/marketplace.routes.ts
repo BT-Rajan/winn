@@ -76,8 +76,20 @@ marketplaceRouter.get(
 marketplaceRouter.get(
   "/projects/:id",
   asyncHandler(async (req, res) => {
-    const { project, documents, match } = await getMarketplaceProject(req.user!.sub, req.params.id);
-    res.json({ project: toDetailDto(project, match), documents: documents.map(toDocumentDto) });
+    const { project, documents, match, myProposal } = await getMarketplaceProject(req.user!.sub, req.params.id);
+    res.json({
+      project: toDetailDto(project, match),
+      documents: documents.map(toDocumentDto),
+      myProposal: myProposal
+        ? {
+            id: myProposal.id,
+            price: myProposal.price,
+            durationValue: myProposal.duration_value,
+            durationUnit: myProposal.duration_unit,
+            status: myProposal.status,
+          }
+        : null,
+    });
   }),
 );
 

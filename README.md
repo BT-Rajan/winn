@@ -14,6 +14,7 @@ full development-pass specification and the rules every pass follows.
 **Pass 3 — Builder Experience: complete.**
 **Pass 4 — Marketplace: complete.**
 **Pass 5 — AI Matching: complete.**
+**Pass 6 — Proposal & Selection: complete.**
 
 Built so far:
 
@@ -21,7 +22,7 @@ Built so far:
   and rotating hashed refresh tokens
 - RBAC (admin / customer / builder) enforced centrally, not per-module
 - Core data model: users, roles, audit_logs, notifications, files, projects,
-  project_documents, builder_profiles, builder_documents
+  project_documents, builder_profiles, builder_documents, proposals
 - Central error handling (one `AppError` hierarchy, one formatting middleware)
 - Audit foundation — every important action writes through one service
 - Notification foundation — in-app now, channel-extensible later
@@ -60,16 +61,28 @@ Built so far:
   signal behind them yet (no capacity tracking, no completed-project
   history) — nothing is faked to fill the gap. The score is fully
   traceable to its inputs (exposed as `matchedCriteria`), and the
-  marketplace listing is now ranked best-match-first instead of
-  submission order.
+  marketplace listing is ranked best-match-first.
+- **Proposal & Selection:** a verified builder submits one proposal per
+  verified project (price, duration, scope, exclusions, payment terms,
+  warranty) — a complete document, not an autosaved draft, since a bid is
+  a formal commitment, not a work-in-progress form. They can edit or
+  withdraw it while it's still open, and resubmit after withdrawing. The
+  customer sees every active proposal on their project side by side —
+  company, price, duration, full terms, and the same honest match score
+  from Pass 5 — in submission order, never re-sorted or filtered by the
+  platform, because the constitution's trust rule here is explicit: *the
+  customer chooses*. Awarding a proposal is one atomic transaction: the
+  winning bid is marked awarded, every other open bid on that project is
+  rejected, and the project itself closes to further proposals — never a
+  partial award. Both sides get notified through the Pass 1 notification
+  foundation.
 
-Passes 6–8 (Proposal & Selection, Commercial, Admin/Trust/Production)
-build on this core without duplicating it — see the constitution doc. In
-particular, subscription/paywall (Commercial), submitting a proposal
-(Proposal & Selection), and admin verification of both projects and
-builder profiles (Admin/Trust) are deliberately not built yet. Because no
-admin verification exists yet, the marketplace and its match scores have
-no real data to show until Pass 8 lands.
+Passes 7–8 (Commercial, Admin/Trust/Production) build on this core
+without duplicating it — see the constitution doc. Subscription/paywall
+and admin verification of both projects and builder profiles are
+deliberately not built yet. Because no admin verification exists yet, the
+marketplace, matching, and proposal flow all have no real data to show
+until Pass 8 lands.
 
 ## Structure
 

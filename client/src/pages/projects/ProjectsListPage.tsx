@@ -9,8 +9,9 @@ import { createProject, listProjects, type Project } from "../../lib/projects";
 const STATUS_LABEL: Record<Project["status"], string> = {
   draft: "Draft",
   submitted: "Submitted — under review",
-  verified: "Verified",
+  verified: "Verified — open for proposals",
   rejected: "Needs changes",
+  awarded: "Awarded",
 };
 
 const STATUS_COLOR: Record<Project["status"], string> = {
@@ -18,6 +19,7 @@ const STATUS_COLOR: Record<Project["status"], string> = {
   submitted: "var(--color-warning)",
   verified: "var(--color-success)",
   rejected: "var(--color-danger)",
+  awarded: "var(--color-success)",
 };
 
 export function ProjectsListPage() {

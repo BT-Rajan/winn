@@ -12,7 +12,7 @@ export interface ProjectRow {
   budget_max: string | null;
   closing_date: string | null;
   requirements: string | null;
-  status: "draft" | "submitted" | "verified" | "rejected";
+  status: "draft" | "submitted" | "verified" | "rejected" | "awarded";
   submitted_at: string | null;
   created_at: string;
   updated_at: string;
