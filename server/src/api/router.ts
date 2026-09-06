@@ -4,6 +4,7 @@ import { usersRouter } from "../modules/users/users.routes";
 import { notificationsRouter } from "../modules/notifications/notifications.routes";
 import { filesRouter } from "../modules/files/files.routes";
 import { projectsRouter } from "../modules/projects/projects.routes";
+import { buildersRouter } from "../modules/builders/builders.routes";
 import { checkDbConnection } from "../db/pool";
 
 export const apiRouter = Router();
@@ -20,3 +21,4 @@ apiRouter.use("/users", usersRouter);
 apiRouter.use("/notifications", notificationsRouter);
 apiRouter.use("/files", filesRouter);
 apiRouter.use("/projects", projectsRouter);
+apiRouter.use("/builders", buildersRouter);

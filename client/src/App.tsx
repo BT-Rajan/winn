@@ -6,6 +6,7 @@ import { RegisterPage } from "./pages/RegisterPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { ProjectsListPage } from "./pages/projects/ProjectsListPage";
 import { ProjectDetailPage } from "./pages/projects/ProjectDetailPage";
+import { BuilderProfilePage } from "./pages/builder/BuilderProfilePage";
 
 export function App() {
   return (
@@ -35,6 +36,14 @@ export function App() {
             element={
               <ProtectedRoute roles={["customer"]}>
                 <ProjectDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/builder/profile"
+            element={
+              <ProtectedRoute roles={["builder"]}>
+                <BuilderProfilePage />
               </ProtectedRoute>
             }
           />

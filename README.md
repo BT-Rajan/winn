@@ -11,6 +11,7 @@ full development-pass specification and the rules every pass follows.
 
 **Pass 1 — Foundation & Core: complete.**
 **Pass 2 — Customer Experience: complete.**
+**Pass 3 — Builder Experience: complete.**
 
 Built so far:
 
@@ -18,7 +19,7 @@ Built so far:
   and rotating hashed refresh tokens
 - RBAC (admin / customer / builder) enforced centrally, not per-module
 - Core data model: users, roles, audit_logs, notifications, files, projects,
-  project_documents
+  project_documents, builder_profiles, builder_documents
 - Central error handling (one `AppError` hierarchy, one formatting middleware)
 - Audit foundation — every important action writes through one service
 - Notification foundation — in-app now, channel-extensible later
@@ -31,12 +32,21 @@ Built so far:
   server-side, not just hidden in the UI, so a project can't be submitted
   incomplete. Once submitted, a project becomes read-only for the customer
   until an admin verifies or rejects it (Pass 8).
+- **Builder company profile:** a builder's single profile is created
+  lazily on first visit — no separate "start" step. Autosave for company
+  name, description, years of experience, service locations, and
+  specialties; upload verification documents via the same file
+  foundation; submit for verification once complete, enforced
+  server-side. Once submitted, the profile is read-only until an admin
+  verifies or rejects it (Pass 8), at which point a rejection reopens it
+  for edits and resubmission.
 
-Passes 3–8 (Builder, Marketplace, AI Matching, Proposal & Selection,
-Commercial, Admin/Trust/Production) build on this core without duplicating
-it — see the constitution doc. In particular, project verification
-(draft → submitted → verified/rejected) and builder-facing visibility into
-submitted projects belong to Pass 8 and Pass 3/4 respectively, not Pass 2.
+Passes 4–8 (Marketplace, AI Matching, Proposal & Selection, Commercial,
+Admin/Trust/Production) build on this core without duplicating it — see
+the constitution doc. In particular, subscription/paywall (Commercial),
+matching projects and match scores (AI Matching), and admin verification
+of both projects and builder profiles (Admin/Trust) are deliberately not
+built yet — they belong to later passes, not this one.
 
 ## Structure
 
