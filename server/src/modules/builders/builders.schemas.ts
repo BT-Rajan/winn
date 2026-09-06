@@ -6,6 +6,8 @@ export const updateBuilderProfileSchema = z.object({
   companyName: z.string().min(1).max(255).optional(),
   description: z.string().max(5000).optional(),
   yearsExperience: z.number().int().nonnegative().max(200).optional().nullable(),
+  budgetRangeMin: z.number().nonnegative().optional().nullable(),
+  budgetRangeMax: z.number().nonnegative().optional().nullable(),
   serviceLocations: z.array(z.string().min(1).max(255)).max(20).optional(),
   specialties: z.array(z.string().min(1).max(255)).max(20).optional(),
 });

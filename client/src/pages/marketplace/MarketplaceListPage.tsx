@@ -121,16 +121,25 @@ export function MarketplaceListPage() {
                     )}
                   </div>
                 </div>
-                <span
-                  style={{
-                    fontSize: "var(--font-size-sm)",
-                    fontWeight: 600,
-                    color: "var(--color-success)",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {project.readiness}
-                </span>
+                <div style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+                  <div
+                    style={{
+                      fontSize: "var(--font-size-lg)",
+                      fontWeight: 700,
+                      color:
+                        project.matchScore >= 70
+                          ? "var(--color-success)"
+                          : project.matchScore >= 40
+                            ? "var(--color-warning)"
+                            : "var(--color-ink-500)",
+                    }}
+                  >
+                    {project.matchScore}% Match
+                  </div>
+                  <div style={{ fontSize: "var(--font-size-xs)", color: "var(--color-ink-300)" }}>
+                    {project.readiness}
+                  </div>
+                </div>
               </div>
             </Card>
           ))}

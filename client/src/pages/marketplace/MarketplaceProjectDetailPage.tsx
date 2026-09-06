@@ -94,13 +94,35 @@ export function MarketplaceProjectDetailPage() {
           <h1 style={{ fontSize: "var(--font-size-2xl)" }}>
             {[project.projectType, project.location].filter(Boolean).join(" · ") || project.title}
           </h1>
-          <span style={{ fontSize: "var(--font-size-sm)", fontWeight: 600, color: "var(--color-success)" }}>
-            {project.readiness}
-          </span>
+          <div style={{ textAlign: "right" }}>
+            <div
+              style={{
+                fontSize: "var(--font-size-xl)",
+                fontWeight: 700,
+                color:
+                  project.matchScore >= 70
+                    ? "var(--color-success)"
+                    : project.matchScore >= 40
+                      ? "var(--color-warning)"
+                      : "var(--color-ink-500)",
+              }}
+            >
+              {project.matchScore}% Match
+            </div>
+            <div style={{ fontSize: "var(--font-size-xs)", color: "var(--color-ink-300)" }}>
+              {project.readiness}
+            </div>
+          </div>
         </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+        <Card>
+          <p style={{ fontSize: "var(--font-size-sm)", color: "var(--color-ink-700)" }}>
+            {project.matchExplanation}
+          </p>
+        </Card>
+
         <Card>
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
             <Row label="Project type" value={project.projectType} />

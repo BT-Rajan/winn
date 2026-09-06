@@ -187,6 +187,14 @@ export function BuilderProfilePage() {
             <Row label="Company name" value={profile.companyName} />
             <Row label="Description" value={profile.description} />
             <Row label="Years of experience" value={profile.yearsExperience?.toString()} />
+            <Row
+              label="Typical budget range"
+              value={
+                profile.budgetRangeMin
+                  ? `${profile.budgetRangeMin}${profile.budgetRangeMax ? ` – ${profile.budgetRangeMax}` : ""}`
+                  : null
+              }
+            />
             <Row label="Service locations" value={profile.serviceLocations.join(", ")} />
             <Row label="Specialties" value={profile.specialties.join(", ")} />
             <Row label="Documents" value={`${documents.length} attached`} />
@@ -216,6 +224,28 @@ export function BuilderProfilePage() {
                   saveField("yearsExperience", e.target.value === "" ? null : Number(e.target.value))
                 }
               />
+              <div style={{ display: "flex", gap: "var(--space-4)" }}>
+                <div style={{ flex: 1 }}>
+                  <Input
+                    label="Typical budget — minimum"
+                    type="number"
+                    defaultValue={profile.budgetRangeMin ?? ""}
+                    onBlur={(e) =>
+                      saveField("budgetRangeMin", e.target.value === "" ? null : Number(e.target.value))
+                    }
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Input
+                    label="Typical budget — maximum"
+                    type="number"
+                    defaultValue={profile.budgetRangeMax ?? ""}
+                    onBlur={(e) =>
+                      saveField("budgetRangeMax", e.target.value === "" ? null : Number(e.target.value))
+                    }
+                  />
+                </div>
+              </div>
               <Input
                 label="Service locations"
                 placeholder="e.g. Kuwait City, Hawalli, Salmiya"

@@ -6,6 +6,8 @@ export interface BuilderProfileRow {
   company_name: string;
   description: string | null;
   years_experience: number | null;
+  budget_range_min: string | null;
+  budget_range_max: string | null;
   service_locations: string[] | null;
   specialties: string[] | null;
   verification_status: "unverified" | "pending" | "verified" | "rejected";
@@ -69,6 +71,8 @@ const UPDATABLE_COLUMNS: Record<string, string> = {
   companyName: "company_name",
   description: "description",
   yearsExperience: "years_experience",
+  budgetRangeMin: "budget_range_min",
+  budgetRangeMax: "budget_range_max",
   serviceLocations: "service_locations",
   specialties: "specialties",
 };

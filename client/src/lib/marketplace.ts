@@ -11,6 +11,8 @@ export interface MarketplaceProjectCard {
   closingDate: string | null;
   readiness: string;
   requirementsSummary: string | null;
+  matchScore: number;
+  matchExplanation: string;
 }
 
 export interface MarketplaceProjectDetail {
@@ -25,6 +27,9 @@ export interface MarketplaceProjectDetail {
   closingDate: string | null;
   readiness: string;
   requirements: string | null;
+  matchScore: number;
+  matchExplanation: string;
+  matchedCriteria: string[];
 }
 
 export interface MarketplaceDocument {

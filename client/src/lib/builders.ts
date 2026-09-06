@@ -7,6 +7,8 @@ export interface BuilderProfile {
   companyName: string;
   description: string | null;
   yearsExperience: number | null;
+  budgetRangeMin: string | null;
+  budgetRangeMax: string | null;
   serviceLocations: string[];
   specialties: string[];
   verificationStatus: VerificationStatus;
@@ -28,6 +30,8 @@ export interface BuilderProfileUpdateInput {
   companyName?: string;
   description?: string;
   yearsExperience?: number | null;
+  budgetRangeMin?: number | null;
+  budgetRangeMax?: number | null;
   serviceLocations?: string[];
   specialties?: string[];
 }

@@ -13,6 +13,7 @@ full development-pass specification and the rules every pass follows.
 **Pass 2 — Customer Experience: complete.**
 **Pass 3 — Builder Experience: complete.**
 **Pass 4 — Marketplace: complete.**
+**Pass 5 — AI Matching: complete.**
 
 Built so far:
 
@@ -37,9 +38,9 @@ Built so far:
   until an admin verifies or rejects it (Pass 8).
 - **Builder company profile:** a builder's single profile is created
   lazily on first visit — no separate "start" step. Autosave for company
-  name, description, years of experience, service locations, and
-  specialties; upload verification documents via the same file
-  foundation; submit for verification once complete, enforced
+  name, description, years of experience, typical budget range, service
+  locations, and specialties; upload verification documents via the same
+  file foundation; submit for verification once complete, enforced
   server-side. Once submitted, the profile is read-only until an admin
   verifies or rejects it (Pass 8), at which point a rejection reopens it
   for edits and resubmission.
@@ -49,17 +50,26 @@ Built so far:
   and lets the builder download the project's documents, access granted
   purely because both sides are verified — no separate access-grant table.
   An unverified builder gets a clear "get verified first" message instead
-  of an error. Every verified builder currently sees every verified
-  project equally; ranking and fit-scoring is Pass 5's job, not this one.
+  of an error.
+- **AI Matching:** a deterministic, rule-based match score (0–100%) and a
+  plain-language explanation for every project/builder pair, computed
+  from specialty overlap, location overlap, typical-budget-range overlap,
+  and years of experience — the only inputs the platform actually has
+  real data for. Availability and historical performance are
+  constitution-listed inputs deliberately left out, since there's no real
+  signal behind them yet (no capacity tracking, no completed-project
+  history) — nothing is faked to fill the gap. The score is fully
+  traceable to its inputs (exposed as `matchedCriteria`), and the
+  marketplace listing is now ranked best-match-first instead of
+  submission order.
 
-Passes 5–8 (AI Matching, Proposal & Selection, Commercial,
-Admin/Trust/Production) build on this core without duplicating it — see
-the constitution doc. In particular, subscription/paywall (Commercial),
-match scores (AI Matching), submitting a proposal (Proposal & Selection),
-and admin verification of both projects and builder profiles (Admin/Trust)
-are deliberately not built yet — they belong to later passes, not this one.
-Because no admin verification exists yet, the marketplace has no real data
-to show until Pass 8 lands.
+Passes 6–8 (Proposal & Selection, Commercial, Admin/Trust/Production)
+build on this core without duplicating it — see the constitution doc. In
+particular, subscription/paywall (Commercial), submitting a proposal
+(Proposal & Selection), and admin verification of both projects and
+builder profiles (Admin/Trust) are deliberately not built yet. Because no
+admin verification exists yet, the marketplace and its match scores have
+no real data to show until Pass 8 lands.
 
 ## Structure
 

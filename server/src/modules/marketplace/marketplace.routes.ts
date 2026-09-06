@@ -5,6 +5,7 @@ import { requireRole } from "../../core/middleware/rbac";
 import { storageDriver } from "../files/storage";
 import { getMarketplaceDocumentFile, getMarketplaceProject, listMarketplaceProjects } from "./marketplace.service";
 import type { ProjectDocumentRow, ProjectRow } from "../projects/projects.repository";
+import type { MatchResult } from "../matching/matching.service";
 
 export const marketplaceRouter = Router();
 
@@ -19,7 +20,7 @@ function summarize(text: string | null, maxLength = 160): string | null {
 }
 
 // Customer identity is never included here — only the project itself.
-function toCardDto(project: ProjectRow) {
+function toCardDto(project: ProjectRow, match: MatchResult) {
   return {
     id: project.id,
     projectType: project.project_type,
@@ -31,10 +32,12 @@ function toCardDto(project: ProjectRow) {
     closingDate: project.closing_date,
     readiness: "Verified",
     requirementsSummary: summarize(project.requirements),
+    matchScore: match.score,
+    matchExplanation: match.explanation,
   };
 }
 
-function toDetailDto(project: ProjectRow) {
+function toDetailDto(project: ProjectRow, match: MatchResult) {
   return {
     id: project.id,
     title: project.title,
@@ -47,6 +50,9 @@ function toDetailDto(project: ProjectRow) {
     closingDate: project.closing_date,
     readiness: "Verified",
     requirements: project.requirements,
+    matchScore: match.score,
+    matchExplanation: match.explanation,
+    matchedCriteria: match.matchedCriteria,
   };
 }
 
@@ -62,16 +68,16 @@ function toDocumentDto(doc: ProjectDocumentRow) {
 marketplaceRouter.get(
   "/projects",
   asyncHandler(async (req, res) => {
-    const projects = await listMarketplaceProjects(req.user!.sub);
-    res.json({ projects: projects.map(toCardDto) });
+    const results = await listMarketplaceProjects(req.user!.sub);
+    res.json({ projects: results.map((r) => toCardDto(r.project, r.match)) });
   }),
 );
 
 marketplaceRouter.get(
   "/projects/:id",
   asyncHandler(async (req, res) => {
-    const { project, documents } = await getMarketplaceProject(req.user!.sub, req.params.id);
-    res.json({ project: toDetailDto(project), documents: documents.map(toDocumentDto) });
+    const { project, documents, match } = await getMarketplaceProject(req.user!.sub, req.params.id);
+    res.json({ project: toDetailDto(project, match), documents: documents.map(toDocumentDto) });
   }),
 );
 

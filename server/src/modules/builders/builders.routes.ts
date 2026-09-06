@@ -25,6 +25,8 @@ function toProfileDto(profile: BuilderProfileRow) {
     companyName: profile.company_name,
     description: profile.description,
     yearsExperience: profile.years_experience,
+    budgetRangeMin: profile.budget_range_min,
+    budgetRangeMax: profile.budget_range_max,
     serviceLocations: profile.service_locations ?? [],
     specialties: profile.specialties ?? [],
     verificationStatus: profile.verification_status,
