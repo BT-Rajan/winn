@@ -54,9 +54,14 @@ export async function getFileOrThrow(id: string): Promise<FileRow> {
   return file;
 }
 
-/** Documents are private by default — only the owner may read them in Pass 1. */
-export function assertCanAccess(file: FileRow, requestingUserId: string): void {
-  if (file.is_private && file.owner_user_id !== requestingUserId) {
+/** Documents are private by default — only the owner may read them, unless
+ *  a caller has already established a business reason for access (e.g.
+ *  Pass 4's marketplace granting a verified builder access to a verified
+ *  project's documents) and passes `granted`. This function stays the one
+ *  place ownership is checked; callers decide *whether* to grant beyond it,
+ *  they never reimplement the check itself. */
+export function assertCanAccess(file: FileRow, requestingUserId: string, granted = false): void {
+  if (file.is_private && file.owner_user_id !== requestingUserId && !granted) {
     throw new ForbiddenError("You do not have access to this file");
   }
 }

@@ -7,6 +7,8 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { ProjectsListPage } from "./pages/projects/ProjectsListPage";
 import { ProjectDetailPage } from "./pages/projects/ProjectDetailPage";
 import { BuilderProfilePage } from "./pages/builder/BuilderProfilePage";
+import { MarketplaceListPage } from "./pages/marketplace/MarketplaceListPage";
+import { MarketplaceProjectDetailPage } from "./pages/marketplace/MarketplaceProjectDetailPage";
 
 export function App() {
   return (
@@ -44,6 +46,22 @@ export function App() {
             element={
               <ProtectedRoute roles={["builder"]}>
                 <BuilderProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketplace"
+            element={
+              <ProtectedRoute roles={["builder"]}>
+                <MarketplaceListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketplace/:id"
+            element={
+              <ProtectedRoute roles={["builder"]}>
+                <MarketplaceProjectDetailPage />
               </ProtectedRoute>
             }
           />

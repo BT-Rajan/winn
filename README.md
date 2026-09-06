@@ -12,6 +12,7 @@ full development-pass specification and the rules every pass follows.
 **Pass 1 — Foundation & Core: complete.**
 **Pass 2 — Customer Experience: complete.**
 **Pass 3 — Builder Experience: complete.**
+**Pass 4 — Marketplace: complete.**
 
 Built so far:
 
@@ -23,7 +24,9 @@ Built so far:
 - Central error handling (one `AppError` hierarchy, one formatting middleware)
 - Audit foundation — every important action writes through one service
 - Notification foundation — in-app now, channel-extensible later
-- File/document foundation — storage behind a swappable driver, private by default
+- File/document foundation — storage behind a swappable driver, private by
+  default, with a generic access-grant hook new modules can extend without
+  reimplementing the ownership check
 - Design system tokens + base components (Button, Input, Textarea, Card, AppShell)
 - Login / Register / Dashboard, session restore on reload
 - **Customer project workspace:** start a project, fill in details with
@@ -40,13 +43,23 @@ Built so far:
   server-side. Once submitted, the profile is read-only until an admin
   verifies or rejects it (Pass 8), at which point a rejection reopens it
   for edits and resubmission.
+- **Marketplace:** verified builders browse verified projects — project
+  type, location, size, budget, closing date, and a requirements summary,
+  with customer identity never exposed. Clicking in shows the full brief
+  and lets the builder download the project's documents, access granted
+  purely because both sides are verified — no separate access-grant table.
+  An unverified builder gets a clear "get verified first" message instead
+  of an error. Every verified builder currently sees every verified
+  project equally; ranking and fit-scoring is Pass 5's job, not this one.
 
-Passes 4–8 (Marketplace, AI Matching, Proposal & Selection, Commercial,
+Passes 5–8 (AI Matching, Proposal & Selection, Commercial,
 Admin/Trust/Production) build on this core without duplicating it — see
 the constitution doc. In particular, subscription/paywall (Commercial),
-matching projects and match scores (AI Matching), and admin verification
-of both projects and builder profiles (Admin/Trust) are deliberately not
-built yet — they belong to later passes, not this one.
+match scores (AI Matching), submitting a proposal (Proposal & Selection),
+and admin verification of both projects and builder profiles (Admin/Trust)
+are deliberately not built yet — they belong to later passes, not this one.
+Because no admin verification exists yet, the marketplace has no real data
+to show until Pass 8 lands.
 
 ## Structure
 

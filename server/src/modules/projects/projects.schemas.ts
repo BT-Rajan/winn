@@ -17,6 +17,11 @@ export const updateProjectSchema = z.object({
   sizeUnit: z.string().max(20).optional().nullable(),
   budgetMin: z.number().nonnegative().optional().nullable(),
   budgetMax: z.number().nonnegative().optional().nullable(),
+  closingDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD")
+    .optional()
+    .nullable(),
   requirements: z.string().max(5000).optional(),
 });
 

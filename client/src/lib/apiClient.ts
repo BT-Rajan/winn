@@ -91,6 +91,36 @@ export async function apiRequest<T>(
   return res.json() as Promise<T>;
 }
 
+/** Downloads a file behind auth (e.g. Pass 4 marketplace documents) by
+ *  fetching it as a blob with the same auth/retry handling as apiRequest,
+ *  then triggering the browser's normal save behavior — a plain <a href>
+ *  can't carry the Authorization header these endpoints require. */
+export async function apiDownload(path: string, suggestedName: string): Promise<void> {
+  let res = await rawRequest(path, { method: "GET" });
+
+  if (res.status === 401 && (await tryRefresh())) {
+    res = await rawRequest(path, { method: "GET" });
+  }
+
+  if (!res.ok) {
+    const payload = await res.json().catch(() => ({}));
+    throw new ApiError(
+      res.status,
+      payload?.error?.message ?? "Download failed",
+      payload?.error?.code,
+      payload?.error?.details,
+    );
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = suggestedName;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 /** Same auth/retry/error handling as apiRequest, for multipart uploads —
  *  kept separate only because a FormData body must not be JSON-stringified
  *  or given a manual Content-Type (the browser sets the multipart boundary). */

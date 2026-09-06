@@ -26,7 +26,14 @@ export function DashboardPage() {
         {!isCustomer && !isBuilder && "Your workspace will appear here once it's ready."}
       </p>
       {isCustomer && <Button onClick={() => navigate("/projects")}>Go to your projects</Button>}
-      {isBuilder && <Button onClick={() => navigate("/builder/profile")}>Go to your company profile</Button>}
+      {isBuilder && (
+        <div style={{ display: "flex", gap: "var(--space-3)" }}>
+          <Button onClick={() => navigate("/builder/profile")}>Go to your company profile</Button>
+          <Button variant="secondary" onClick={() => navigate("/marketplace")}>
+            Browse marketplace
+          </Button>
+        </div>
+      )}
       {!isCustomer && !isBuilder && (
         <Card>
           <p style={{ color: "var(--color-ink-500)", fontSize: "var(--font-size-sm)" }}>

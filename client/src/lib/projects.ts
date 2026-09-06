@@ -11,6 +11,7 @@ export interface Project {
   sizeUnit: string | null;
   budgetMin: string | null;
   budgetMax: string | null;
+  closingDate: string | null;
   requirements: string | null;
   status: ProjectStatus;
   submittedAt: string | null;
@@ -35,6 +36,7 @@ export interface ProjectUpdateInput {
   sizeUnit?: string | null;
   budgetMin?: number | null;
   budgetMax?: number | null;
+  closingDate?: string | null;
   requirements?: string;
 }
 

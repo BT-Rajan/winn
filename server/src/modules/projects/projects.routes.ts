@@ -35,6 +35,7 @@ function toProjectDto(project: ProjectRow) {
     sizeUnit: project.size_unit,
     budgetMin: project.budget_min,
     budgetMax: project.budget_max,
+    closingDate: project.closing_date,
     requirements: project.requirements,
     status: project.status,
     submittedAt: project.submitted_at,

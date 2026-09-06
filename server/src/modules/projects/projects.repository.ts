@@ -10,6 +10,7 @@ export interface ProjectRow {
   size_unit: string | null;
   budget_min: string | null;
   budget_max: string | null;
+  closing_date: string | null;
   requirements: string | null;
   status: "draft" | "submitted" | "verified" | "rejected";
   submitted_at: string | null;
@@ -59,6 +60,7 @@ const UPDATABLE_COLUMNS: Record<string, string> = {
   sizeUnit: "size_unit",
   budgetMin: "budget_min",
   budgetMax: "budget_max",
+  closingDate: "closing_date",
   requirements: "requirements",
 };
 
@@ -123,4 +125,19 @@ export async function countProjectDocuments(projectId: string): Promise<number> 
     { projectId },
   );
   return Number((rows as { count: number }[])[0]?.count ?? 0);
+}
+
+/** Pass 4 (Marketplace) reads verified projects straight from this same
+ *  table — a project has exactly one status, one source of truth,
+ *  never a separate "published listings" copy. */
+export async function listVerifiedProjects(): Promise<ProjectRow[]> {
+  const [rows] = await pool.query(
+    `SELECT * FROM projects WHERE status = 'verified' ORDER BY submitted_at DESC`,
+  );
+  return rows as ProjectRow[];
+}
+
+export async function findVerifiedProjectById(id: string): Promise<ProjectRow | null> {
+  const [rows] = await pool.query(`SELECT * FROM projects WHERE id = :id AND status = 'verified'`, { id });
+  return (rows as ProjectRow[])[0] ?? null;
 }

@@ -201,6 +201,7 @@ export function ProjectDetailPage() {
               }
             />
             <Row label="Requirements" value={project.requirements} />
+            <Row label="Closing date" value={project.closingDate} />
             <Row label="Documents" value={`${documents.length} attached`} />
           </div>
         </Card>
@@ -266,6 +267,12 @@ export function ProjectDetailPage() {
                 placeholder="What does the builder need to know?"
                 defaultValue={project.requirements ?? ""}
                 onBlur={(e) => saveField("requirements", e.target.value)}
+              />
+              <Input
+                label="Closing date (optional)"
+                type="date"
+                defaultValue={project.closingDate ?? ""}
+                onBlur={(e) => saveField("closingDate", e.target.value, (raw) => (raw === "" ? null : raw))}
               />
             </div>
           </Card>
